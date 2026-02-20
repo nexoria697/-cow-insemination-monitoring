@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Akıllı İnek Takip Sistemi</title>
+    <style>
+        body {
+            font-family: Arial;
+            background-color: #f4f4f4;
+            text-align: center;
+        }
+        .card {
+            background: white;
+            padding: 20px;
+            margin: 20px auto;
+            width: 300px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px gray;
+        }
+        .alert {
+            color: red;
+            font-weight: bold;
+        }
+        .normal {
+            color: green;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<h1>İnek Gebelik Takip Paneli</h1>
+
+<div class="card">
+    <h3>İnek No: <span id="cowID">125</span></h3>
+    <p>Sıcaklık: <span id="temp">--</span> °C</p>
+    <p>Aktivite: <span id="activity">--</span></p>
+    <p>Risk Skoru: <span id="risk">--</span></p>
+    <p id="status"></p>
+</div>
+
+<script>
+async function fetchData() {
+    const response = await fetch("http://ESP32_IP_ADRESI/data");
+    const data = await response.json();
+
+    document.getElementById("temp").innerText = data.temperature;
+    document.getElementById("activity").innerText = data.activity;
+    document.getElementById("risk").innerText = data.risk;
+
+    if (data.risk > 70) {
+        document.getElementById("status").innerHTML = "⚠ Gebelik Şüpheli!";
+        document.getElementById("status").className = "alert";
+    } else {
+        document.getElementById("status").innerHTML = "✔ Stabil";
+        document.getElementById("status").className = "normal";
+    }
+}
+
+setInterval(fetchData, 3000);
+</script>
+
+</body>
+</html>
