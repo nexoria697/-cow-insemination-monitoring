@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Akıllı Çiftlik Yönetimi</title>
+<style>
+body{
+    font-family: Arial;
+    background:#1e1e2f;
+    color:white;
+    text-align:center;
+}
+button{
+    padding:8px 12px;
+    margin:5px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+}
+.addBtn{background:#00cc88;}
+.card{
+    background:#2c2c3e;
+    margin:15px auto;
+    padding:15px;
+    width:340px;
+    border-radius:15px;
+}
+.good{color:#00ff88;}
+.bad{color:#ff4444;}
+input{
+    padding:5px;
+    margin:5px;
+    border-radius:6px;
+    border:none;
+}
+</style>
+</head>
+<body>
+
+<h1>🐄 Akıllı Çiftlik Paneli</h1>
+
+<button class="addBtn" onclick="addCow()">+ Yeni İnek Ekle</button>
+
+<div id="cowList"></div>
+
+<script>
+
+let cows = JSON.parse(localStorage.getItem("cows")) || [];
+
+function save(){
+    localStorage.setItem("cows",JSON.stringify(cows));
+}
+
+function addCow(){
+    let id = prompt("İnek ID gir:");
+    if(!id) return;
+
+    cows.push({
+        id:id,
+        temperature:38.5,
+        activity:50,
+        vaccines:[],
+        heatDates:[],
+        risk:0
+    });
+
+    save();
+    render();
+}
+
+function addVaccine(index){
+    let vaccine = prompt("Yapılan aşı:");
+    if(vaccine){
+        cows[index].vaccines.push(vaccine);
+        save();
+        render();
+    }
+}
+
+function addHeat(index){
+    let date = prompt("Kızgınlık tarihi (GG/AA/YYYY):");
+    if(date){
+        cows[index].heatDates.push(date);
+        save();
+        render();
+    }
+}
+
+function calculateRisk(cow){
+    let risk = 0;
+    if(cow.temperature > 39.5) risk += 40;
+    if(cow.activity > 80) risk += 40;
+    return risk;
+}
+
+function render(){
+    let container = document.getElementById("cowList");
+    container.innerHTML = "";
+
+    cows.forEach((cow,index)=>{
+        cow.risk = calculateRisk(cow);
+
+        container.innerHTML += `
+        <div class="card">
+            <h3>İnek ID: ${cow.id}</h3>
+            <p>Sıcaklık: ${cow.temperature} °C</p>
+            <p>Aktivite: ${cow.activity}</p>
+            <p>Risk: <span class="${cow.risk>70?'bad':'good'}">
+            ${cow.risk>70?'Gebelik Şüpheli':'Stabil'}
+            </span></p>
+
+            <p>Aşılar: ${cow.vaccines.join(", ") || "Yok"}</p>
+            <p>Kızgınlık Tarihleri: ${cow.heatDates.join(", ") || "Yok"}</p>
+
+            <button onclick="addVaccine(${index})">Aşı Ekle</button>
+            <button onclick="addHeat(${index})">Kızgınlık Ekle</button>
+        </div>
+        `;
+    });
+}
+
+render();
+
+</script>
+
+</body>
+</html>
