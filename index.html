@@ -1,63 +1,67 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <title>Akıllı İnek Takip Sistemi</title>
-    <style>
-        body {
-            font-family: Arial;
-            background-color: #f4f4f4;
-            text-align: center;
-        }
-        .card {
-            background: white;
-            padding: 20px;
-            margin: 20px auto;
-            width: 300px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px gray;
-        }
-        .alert {
-            color: red;
-            font-weight: bold;
-        }
-        .normal {
-            color: green;
-            font-weight: bold;
-        }
-    </style>
+<meta charset="UTF-8">
+<title>Akıllı Gebelik Takip Sistemi</title>
+<style>
+body{
+    font-family: Arial;
+    background:#1e1e2f;
+    color:white;
+    text-align:center;
+}
+.card{
+    background:#2c2c3e;
+    width:320px;
+    margin:20px auto;
+    padding:20px;
+    border-radius:15px;
+    box-shadow:0 0 15px black;
+}
+.value{
+    font-size:22px;
+    font-weight:bold;
+}
+.good{color:#00ff88;}
+.bad{color:#ff4444;}
+</style>
 </head>
 <body>
 
-<h1>İnek Gebelik Takip Paneli</h1>
+<h1>🐄 İnek Gebelik Takip Paneli</h1>
 
 <div class="card">
-    <h3>İnek No: <span id="cowID">125</span></h3>
-    <p>Sıcaklık: <span id="temp">--</span> °C</p>
-    <p>Aktivite: <span id="activity">--</span></p>
-    <p>Risk Skoru: <span id="risk">--</span></p>
-    <p id="status"></p>
+    <p>Sıcaklık</p>
+    <div id="temp" class="value">--</div>
+</div>
+
+<div class="card">
+    <p>Aktivite</p>
+    <div id="activity" class="value">--</div>
+</div>
+
+<div class="card">
+    <p>Risk Durumu</p>
+    <div id="status" class="value">--</div>
 </div>
 
 <script>
-async function fetchData() {
-    const response = await fetch("http://ESP32_IP_ADRESI/data");
-    const data = await response.json();
+async function getData(){
+    const res = await fetch("/data");
+    const data = await res.json();
 
-    document.getElementById("temp").innerText = data.temperature;
+    document.getElementById("temp").innerText = data.temperature + " °C";
     document.getElementById("activity").innerText = data.activity;
-    document.getElementById("risk").innerText = data.risk;
 
-    if (data.risk > 70) {
-        document.getElementById("status").innerHTML = "⚠ Gebelik Şüpheli!";
-        document.getElementById("status").className = "alert";
+    if(data.risk > 70){
+        document.getElementById("status").innerText = "⚠ Gebelik Şüpheli";
+        document.getElementById("status").className = "value bad";
     } else {
-        document.getElementById("status").innerHTML = "✔ Stabil";
-        document.getElementById("status").className = "normal";
+        document.getElementById("status").innerText = "✔ Stabil";
+        document.getElementById("status").className = "value good";
     }
 }
-
-setInterval(fetchData, 3000);
+setInterval(getData,2000);
 </script>
 
 </body>
